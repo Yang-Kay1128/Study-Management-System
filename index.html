@@ -1,0 +1,2444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>学霸任务管理</title>
+        <link rel="stylesheet" href="style.css">
+        <style>
+            /* 内联样式，确保修改立即生效 */
+            .task-controls {
+                background: white;
+                padding: 15px;
+                border-radius: 10px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            
+            .filter-buttons {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                margin-bottom: 10px;
+            }
+            
+            .filter-buttons > div {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+            
+            .filter-buttons > button {
+                margin-left: auto;
+            }
+            
+            .sort-controls {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                justify-content: flex-end;
+                margin-top: 10px;
+                padding-top: 10px;
+                border-top: 1px solid #f0f0f0;
+            }
+            
+            .btn-secondary {
+                background-color: #f0f0f0;
+                color: #333;
+                padding: 4px 10px;
+                border: 1px solid #ddd;
+                border-radius: 14px;
+                font-size: 12px;
+                font-weight: bold;
+                transition: all 0.3s ease;
+                cursor: pointer;
+                margin-right: 3px;
+            }
+            
+            .btn-secondary:hover {
+                background-color: #e0e0e0;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            
+            .btn-secondary.active {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-color: #667eea;
+                box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+            }
+            
+            .student-btn,
+            .type-btn {
+                padding: 4px 10px;
+                border: 1px solid #ddd;
+                background-color: #f5f5f5;
+                border-radius: 14px;
+                cursor: pointer;
+                font-size: 12px;
+                font-weight: bold;
+                transition: all 0.3s ease;
+                margin-right: 3px;
+            }
+            
+            .student-btn:hover,
+            .type-btn:hover {
+                background-color: #e0e0e0;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            
+            .student-btn.active,
+            .type-btn.active {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-color: #667eea;
+                box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+            }
+            
+            .date-filter {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+            
+            .date-filter span {
+                font-size: 12px;
+                font-weight: bold;
+                color: #555;
+            }
+            
+            .date-filter input[type="date"] {
+                padding: 4px 8px;
+                border: 1px solid #ddd;
+                border-radius: 14px;
+                font-size: 12px;
+                transition: all 0.3s ease;
+            }
+            
+            #apply-date-filter {
+                padding: 4px 10px;
+                border: 1px solid #ddd;
+                background-color: #f5f5f5;
+                border-radius: 14px;
+                cursor: pointer;
+                font-size: 12px;
+                font-weight: bold;
+                transition: all 0.3s ease;
+            }
+            
+            .sort-controls label {
+                font-size: 12px;
+                font-weight: bold;
+                color: #555;
+            }
+            
+            .sort-controls select {
+                padding: 4px 10px;
+                border: 1px solid #ddd;
+                border-radius: 14px;
+                font-size: 12px;
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+            
+            .student-filter span,
+            .type-filter span {
+                font-size: 12px;
+                font-weight: bold;
+                color: #555;
+            }
+            
+            /* 响应式样式 */
+            @media (max-width: 768px) {
+                .container {
+                    padding: 10px;
+                }
+                
+                header h1 {
+                    font-size: 20px;
+                    text-align: center;
+                }
+                
+                .task-controls {
+                    padding: 10px;
+                }
+                
+                .filter-buttons {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 10px;
+                }
+                
+                .filter-buttons > div {
+                    width: 100%;
+                    justify-content: space-between;
+                }
+                
+                .filter-buttons > button {
+                    margin-left: 0;
+                    width: 100%;
+                }
+                
+                .date-filter {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 5px;
+                    width: 100%;
+                }
+                
+                .date-filter input[type="date"] {
+                    width: 100%;
+                }
+                
+                #apply-date-filter {
+                    width: 100%;
+                    margin-top: 5px;
+                }
+                
+                .sort-controls {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 5px;
+                }
+                
+                .sort-controls select {
+                    width: 100%;
+                }
+                
+                .task-controls {
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                
+                .task-controls button {
+                    width: 100%;
+                    justify-content: center;
+                }
+                
+                .modal-content {
+                    width: 95%;
+                    margin: 10% auto;
+                }
+                
+                .modal-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 10px;
+                }
+                
+                .modal-controls {
+                    align-self: flex-end;
+                }
+                
+                .form-row {
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                
+                .form-group {
+                    width: 100%;
+                }
+                
+                .homework-sections {
+                    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                    gap: 8px;
+                }
+                
+                .homework-section-item {
+                    padding: 8px;
+                }
+                
+                .section-number {
+                    font-size: 12px;
+                }
+                
+                .section-status {
+                    font-size: 10px;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .task-controls button {
+                    padding: 10px 15px;
+                    font-size: 14px;
+                }
+                
+                #efficiency-dashboard {
+                    padding: 12px 20px;
+                    font-size: 15px;
+                }
+                
+                .modal-content {
+                    width: 98%;
+                    margin: 5% auto;
+                }
+                
+                .homework-sections {
+                    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                }
+            }
+        </style>
+    </head>
+<body>
+    <div class="container">
+        <header>
+            <h1>学霸任务管理</h1>
+        </header>
+        
+        <main>
+            <!-- 刷新页面按钮 -->
+            <div style="position: absolute; top: 20px; right: 20px;">
+                <button id="refresh-page-btn" class="btn" style="padding: 8px 16px; font-size: 12px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: #333; border: none; display: flex; align-items: center; gap: 4px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 12A10 10 0 0 0 22 12"></path>
+                    </svg>
+                    刷新页面
+                </button>
+            </div>
+            
+            <!-- 主要功能按钮 -->
+            <div class="task-controls" style="display: flex; justify-content: center; gap: 15px; padding: 20px; flex-wrap: wrap;">
+                <button id="timetable-btn" class="btn" style="padding: 10px 20px; font-size: 14px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; background: linear-gradient(135deg, #ffd93d 0%, #f9a826 100%); color: #333; border: none; display: flex; align-items: center; gap: 6px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    课程表
+                </button>
+                <button id="school-progress-btn" class="btn" style="padding: 12px 30px; font-size: 16px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; background: linear-gradient(135deg, #4ecdc4 0%, #45b7aa 100%); color: white; border: none; display: flex; align-items: center; gap: 8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    学校课程进度
+                </button>
+                <button id="add-task-btn" class="btn btn-primary" style="padding: 12px 30px; font-size: 16px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    新增作业
+                </button>
+                <button id="exam-ranking-btn" class="btn" style="padding: 12px 30px; font-size: 16px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border: none; display: flex; align-items: center; gap: 8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                    考试排名分析
+                </button>
+
+                <button id="efficiency-dashboard" class="btn" style="padding: 14px 35px; font-size: 17px; font-weight: 600; border-radius: 12px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4), 0 4px 15px rgba(102, 126, 234, 0.2); transition: all 0.3s ease; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; position: relative; overflow: hidden; transform: translateY(0);">
+                    <span style="position: relative; z-index: 2; display: flex; align-items: center; gap: 10px;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        学习效率分析
+                    </span>
+                    <span style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; z-index: 1;"></span>
+                    <span style="position: absolute; bottom: -40px; left: -40px; width: 120px; height: 120px; background: rgba(255, 255, 255, 0.05); border-radius: 50%; z-index: 1;"></span>
+                    <span style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%); transform: translateX(-100%); transition: transform 0.6s ease; z-index: 1;"></span>
+                    <style>
+                        #efficiency-dashboard:hover {
+                            transform: translateY(-5px);
+                            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5), 0 6px 20px rgba(102, 126, 234, 0.3);
+                        }
+                        #efficiency-dashboard:hover span:last-child {
+                            transform: translateX(100%);
+                        }
+                        #efficiency-dashboard:active {
+                            transform: translateY(-2px);
+                            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4), 0 3px 10px rgba(102, 126, 234, 0.2);
+                        }
+                    </style>
+                </button>
+            </div>
+            
+            <div class="task-controls">
+                <div class="filter-buttons">
+                    <button class="btn btn-secondary active" data-filter="all">全部</button>
+                    <button class="btn btn-secondary" data-filter="pending">未完成</button>
+                    <button class="btn btn-secondary" data-filter="completed">已完成</button>
+                    <div class="student-filter">
+                        <span>学霸过滤:</span>
+                        <button class="student-btn active" data-student="">全部</button>
+                        <button class="student-btn" data-student="KYP">KYP♂</button>
+                        <button class="student-btn" data-student="KL">KL♀</button>
+                    </div>
+                    <div class="type-filter">
+                        <span>作业类型:</span>
+                        <button class="type-btn active" data-type="">全部</button>
+                        <button class="type-btn" data-type="学校作业">学校作业</button>
+                        <button class="type-btn" data-type="家庭作业">家庭作业</button>
+                    </div>
+                    <div class="date-filter">
+                        <span>日期范围:</span>
+                        <input type="date" id="date-start" placeholder="开始日期">
+                        <span>至</span>
+                        <input type="date" id="date-end" placeholder="结束日期">
+                        <button class="btn btn-secondary" id="apply-date-filter">应用</button>
+                    </div>
+                </div>
+                <div class="sort-controls">
+                    <label for="sort-by">排序方式：</label>
+                    <select id="sort-by">
+                        <option value="dueDate">截止日期</option>
+                        <option value="priority">优先级</option>
+                        <option value="subject">科目</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="task-list" id="task-list">
+                <!-- 任务列表将通过JavaScript动态生成 -->
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; 2026 学霸任务管理</p>
+        </footer>
+    </div>
+    
+    <!-- 学校课程进度模态框 -->
+    <div id="school-progress-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">学校课程进度</h2>
+                <div class="modal-controls">
+                    <span class="minimize">−</span>
+                    <span class="maximize">□</span>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form id="school-progress-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="progress-student">学霸 <span class="required">*</span></label>
+                            <select id="progress-student" required onchange="taskManager.updateGradeOptions()">
+                                <option value="">选择学霸</option>
+                                <option value="KL">KL♀</option>
+                                <option value="KYP">KYP♂</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="progress-grade">年级 <span class="required">*</span></label>
+                            <select id="progress-grade" required onchange="taskManager.updateSemesterOptions()">
+                                <option value="">选择年级</option>
+                                <option value="grade5">五年级</option>
+                                <option value="grade8">八年级</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="progress-semester">册别 <span class="required">*</span></label>
+                            <select id="progress-semester" required onchange="taskManager.generateCourses()">
+                                <option value="">选择册别</option>
+                                <option value="first">上册</option>
+                                <option value="second">下册</option>
+                                <option value="all">全一册</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="progress-date">日期 <span class="required">*</span></label>
+                            <input type="date" id="progress-date" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-secondary" id="view-history-btn" style="padding: 10px 20px; background-color: #4ecdc4; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; transition: background-color 0.3s ease;">查看历史进度</button>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-secondary" id="progress-textbook-btn" style="padding: 10px 20px; background-color: #667eea; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; transition: background-color 0.3s ease;">教材</button>
+                        </div>
+                    </div>
+                    <div id="progress-courses" class="courses-container">
+                        <!-- 课程列表将通过JavaScript动态生成 -->
+                    </div>
+                    <button type="submit" class="btn btn-primary">保存进度</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    
+    <!-- 历史进度模态框 -->
+    <div id="history-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">历史进度</h2>
+                <div class="modal-controls">
+                    <span class="minimize">−</span>
+                    <span class="maximize">□</span>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div id="history-list"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 课程表模态框 -->
+    <div id="timetable-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">课程表</h2>
+                <div class="modal-controls">
+                    <span class="minimize">−</span>
+                    <span class="maximize">□</span>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="timetable-container">
+                    <div class="timetable-header">
+                        <div class="timetable-student-selector">
+                            <label for="timetable-student">选择学霸：</label>
+                            <select id="timetable-student">
+                                <option value="">选择学霸</option>
+                                <option value="KL">KL♀</option>
+                                <option value="KYP">KYP♂</option>
+                            </select>
+                        </div>
+                        <h3 id="timetable-week-info">第X周 (2026年4月X日 - 4月X日)</h3>
+                        <div class="timetable-controls">
+                            <button class="btn btn-secondary" id="prev-week">上一周</button>
+                            <button class="btn btn-secondary" id="current-week">本周</button>
+                            <button class="btn btn-secondary" id="next-week">下一周</button>
+                        </div>
+                    </div>
+                    <div class="timetable-grid">
+                        <div class="timetable-row">
+                            <div class="timetable-cell header"></div>
+                            <div class="timetable-cell header">周一<br>6日</div>
+                            <div class="timetable-cell header">周二<br>7日</div>
+                            <div class="timetable-cell header">周三<br>8日</div>
+                            <div class="timetable-cell header">周四<br>9日</div>
+                            <div class="timetable-cell header">周五<br>10日</div>
+                        </div>
+                        <div class="timetable-row">
+                            <div class="timetable-cell time">第一节课<br>8:20-8:55</div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                        </div>
+                        <div class="timetable-row">
+                            <div class="timetable-cell time">第二节课<br>9:05-9:55</div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                        </div>
+                        <div class="timetable-row">
+                            <div class="timetable-cell time">第三节课<br>10:05-10:55</div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                        </div>
+                        <div class="timetable-row">
+                            <div class="timetable-cell time">第四节课<br>11:05-11:45</div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                        </div>
+                        <div class="timetable-row">
+                            <div class="timetable-cell time">午休<br>11:45-13:10</div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                        </div>
+                        <div class="timetable-row">
+                            <div class="timetable-cell time">第五节课<br>13:10-13:45</div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                        </div>
+                        <div class="timetable-row">
+                            <div class="timetable-cell time">第六节课<br>13:55-14:45</div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                        </div>
+                        <div class="timetable-row">
+                            <div class="timetable-cell time">第七节课<br>14:55-15:45</div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 教材模态框 -->
+    <div id="textbook-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">教材目录</h2>
+                <div class="modal-controls">
+                    <span class="minimize">−</span>
+                    <span class="maximize">□</span>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="textbook-container" style="padding: 20px;">
+                    <div class="textbook-filters" style="display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap;">
+                        <div class="filter-group" style="flex: 1; min-width: 200px;">
+                            <label style="display: block; margin-bottom: 10px; font-weight: bold; color: #333;">选择年级：</label>
+                            <select id="textbook-grade" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                                <option value="">全部年级</option>
+                                <option value="grade5">五年级</option>
+                                <option value="grade6">六年级</option>
+                                <option value="grade7">七年级</option>
+                                <option value="grade8">八年级</option>
+                                <option value="grade9">九年级</option>
+                            </select>
+                        </div>
+                        <div class="filter-group" style="flex: 1; min-width: 200px;">
+                            <label style="display: block; margin-bottom: 10px; font-weight: bold; color: #333;">选择科目：</label>
+                            <select id="textbook-subject" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                                <option value="">全部科目</option>
+                                <option value="chinese">语文</option>
+                                <option value="math">数学</option>
+                                <option value="english">英语</option>
+                                <option value="physics">物理</option>
+                                <option value="chemistry">化学</option>
+                                <option value="biology">生物</option>
+                            </select>
+                        </div>
+                        <div class="filter-group" style="flex: 1; min-width: 200px;">
+                            <label style="display: block; margin-bottom: 10px; font-weight: bold; color: #333;">选择册别：</label>
+                            <select id="textbook-semester" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                                <option value="">全部册别</option>
+                                <option value="first">上册</option>
+                                <option value="second">下册</option>
+                                <option value="all">全一册</option>
+                            </select>
+                        </div>
+                        <div class="filter-group" style="flex: 0 0 auto; display: flex; align-items: flex-end; margin-left: 10px;">
+                            <button id="apply-filter" style="padding: 10px 20px; background-color: #667eea; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; transition: background-color 0.3s ease; white-space: nowrap;">确认</button>
+                        </div>
+                    </div>
+                    
+                    <div class="textbook-content" style="background-color: #f8f9fa; border-radius: 10px; padding: 20px; min-height: 400px;">
+                        <h3 style="margin-top: 0; margin-bottom: 20px; color: #333; font-size: 18px; font-weight: bold; border-bottom: 2px solid #f5576c; padding-bottom: 10px;">教材目录</h3>
+                        <div id="textbook-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 25px;">
+                            <!-- 五年级数学下册 -->
+                            <div class="textbook-item" data-grade="grade5" data-subject="math" data-version="hjb" data-semester="second" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-left: 4px solid #4ecdc4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">五年级数学下册（沪教版 五四制 2024版）</h4>
+                                <div style="font-size: 13px; color: #999; margin-bottom: 15px;">沪教版 | 五四制 | 2024版</div>
+                                <div class="textbook-chapters" style="margin-top: 15px;">
+                                    <div class="chapter" style="margin-bottom: 10px;">
+                                        <div class="chapter-title" style="font-weight: bold; color: #4ecdc4; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                            <span style="margin-right: 5px;">▶</span>一、复习与提高
+                                        </div>
+                                        <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                            <div>1. 小数的四则混合运算</div>
+                                            <div>2. 方程</div>
+                                            <div>3. 面积的估测（2）</div>
+                                            <div>4. 自然数</div>
+                                        </div>
+                                    </div>
+                                    <div class="chapter" style="margin-bottom: 10px;">
+                                        <div class="chapter-title" style="font-weight: bold; color: #4ecdc4; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                            <span style="margin-right: 5px;">▶</span>二、正数和负数的初步认识
+                                        </div>
+                                        <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                            <div>2.1 正数和负数</div>
+                                            <div>2.2 数轴</div>
+                                        </div>
+                                    </div>
+                                    <div class="chapter" style="margin-bottom: 10px;">
+                                        <div class="chapter-title" style="font-weight: bold; color: #4ecdc4; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                            <span style="margin-right: 5px;">▶</span>三、简易方程（二）
+                                        </div>
+                                        <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                            <div>3.1 列方程解决问题（三）</div>
+                                            <div>3.2 列方程解决问题（四）</div>
+                                        </div>
+                                    </div>
+                                    <div class="chapter" style="margin-bottom: 10px;">
+                                        <div class="chapter-title" style="font-weight: bold; color: #4ecdc4; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                            <span style="margin-right: 5px;">▶</span>四、几何小实践
+                                        </div>
+                                        <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                            <div>4.1 体积</div>
+                                            <div>4.2 立方厘米、立方分米、立方米</div>
+                                            <div>4.3 长方体与正方体的认识</div>
+                                            <div>4.4 长方体与正方体的体积</div>
+                                            <div>4.5 组合体的体积</div>
+                                            <div>4.6 正方体、长方体的展开图</div>
+                                            <div>4.7 正方体、长方体的表面积</div>
+                                            <div>4.8 小练习</div>
+                                            <div>4.9 表面积的变化</div>
+                                            <div>4.10 体积与容积</div>
+                                            <div>4.11 体积与重量</div>
+                                        </div>
+                                    </div>
+                                    <div class="chapter" style="margin-bottom: 10px;">
+                                        <div class="chapter-title" style="font-weight: bold; color: #4ecdc4; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                            <span style="margin-right: 5px;">▶</span>五、可能性
+                                        </div>
+                                        <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                            <div>5.1 可能性</div>
+                                            <div>5.2 可能性的大小</div>
+                                            <div>5.3 可能情况的个数</div>
+                                        </div>
+                                    </div>
+                                    <div class="chapter" style="margin-bottom: 10px;">
+                                        <div class="chapter-title" style="font-weight: bold; color: #4ecdc4; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                            <span style="margin-right: 5px;">▶</span>六、总复习
+                                        </div>
+                                        <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                            <div>数与运算 / 练习一</div>
+                                            <div>方程与代数 / 练习二</div>
+                                            <div>图形与几何 / 练习三</div>
+                                            <div>统计初步 / 练习四</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 五年级语文下册 -->
+                        <div class="textbook-item" data-grade="grade5" data-subject="chinese" data-version="rjb" data-semester="second" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-left: 4px solid #667eea;">
+                            <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">五年级语文下册（人教版 部编版 2026春）</h4>
+                            <div style="font-size: 13px; color: #999; margin-bottom: 15px;">人教版 | 部编版 | 2026春</div>
+                            <div class="textbook-chapters" style="margin-top: 15px;">
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #667eea; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第一单元：童年往事
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>1. 《古诗三首》</div>
+                                        <div>2. 《少年闰土》</div>
+                                        <div>3. 《祖父的园子》</div>
+                                        <div>4. 《月是故乡明》</div>
+                                        <div>◎口语交际：走进他们的童年岁月</div>
+                                        <div>◎习作：那一刻，我长大了</div>
+                                        <div>◎语文园地</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #667eea; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第二单元：古典名著之旅
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>5. 《草船借箭》</div>
+                                        <div>6. 《景阳冈》</div>
+                                        <div>7. 《猴王出世》</div>
+                                        <div>8. 《红楼春趣》</div>
+                                        <div>◎口语交际：怎么表演课本剧</div>
+                                        <div>◎习作：写读后感</div>
+                                        <div>◎快乐读书吧：读古典名著，品味人生</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #667eea; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第三单元：责任与担当
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>9. 《古诗三首》</div>
+                                        <div>10. 《青山处处埋忠骨》</div>
+                                        <div>11. 《军神》</div>
+                                        <div>12. 《清贫》</div>
+                                        <div>◎习作：他_____了</div>
+                                        <div>◎语文园地</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #667eea; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第四单元：形形色色的人物
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>13. 《人物描写一组》</div>
+                                        <div>14. 《刷子李》</div>
+                                        <div>◎习作例文—我的朋友容容</div>
+                                        <div>◎习作例文—小守门员和他的观众们</div>
+                                        <div>◎习作：形形色色的人</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #667eea; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第五单元：思维的火花
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>15. 《自相矛盾》</div>
+                                        <div>16. 《田忌赛马》</div>
+                                        <div>17. 《跳水》</div>
+                                        <div>◎习作：神奇的探险之旅</div>
+                                        <div>◎语文园地</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #667eea; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第六单元：世界各地
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>18. 《威尼斯的小艇》</div>
+                                        <div>19. 《牧场之国》</div>
+                                        <div>20. 《金字塔—不可思议的金字塔》</div>
+                                        <div>◎口语交际：我是小小讲解员</div>
+                                        <div>◎习作：中国的世界文化遗产</div>
+                                        <div>◎语文园地</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #667eea; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第七单元：语言的艺术
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>21. 《杨氏之子》</div>
+                                        <div>22. 《手指》</div>
+                                        <div>23. 《童年的发现》</div>
+                                        <div>◎口语交际：我们都来讲笑话</div>
+                                        <div>◎习作：漫画的启示</div>
+                                        <div>◎语文园地</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #667eea; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第八单元：回忆与惜别
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>回忆往事</div>
+                                        <div>依依惜别</div>
+                                        <div>杂诗（节选）</div>
+                                        <div>◎古诗词阅读</div>
+                                        <div>早春呈水部张十八员外</div>
+                                        <div>江上渔者</div>
+                                        <div>游园不值</div>
+                                        <div>泊船瓜洲</div>
+                                        <div>卜算子·送鲍浩然之浙东</div>
+                                        <div>浣溪沙</div>
+                                        <div>清平乐</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 五年级英语下册 -->
+                        <div class="textbook-item" data-grade="grade5" data-subject="english" data-version="nkshb" data-semester="second" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-left: 4px solid #f5576c;">
+                            <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">五年级英语下册（牛津上海版 2026春）</h4>
+                            <div style="font-size: 13px; color: #999; margin-bottom: 15px;">牛津上海版 | 2026春</div>
+                            <div class="textbook-chapters" style="margin-top: 15px;">
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #f5576c; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>Module 1 Using my five senses
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>Unit 1 What a mess!</div>
+                                        <div>Unit 2 Watch it grow!</div>
+                                        <div>Unit 3 How noisy!</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #f5576c; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>Module 2 My favourite things
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>Unit 1 Food and drinks</div>
+                                        <div>Unit 2 Films</div>
+                                        <div>Unit 3 School subjects</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #f5576c; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>Module 3 Things around us
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>Unit 1 Signs</div>
+                                        <div>Unit 2 Weather</div>
+                                        <div>Unit 3 Changes</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #f5576c; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>Module 4 More things to learn
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>Unit 1 Museums</div>
+                                        <div>Unit 2 Western holidays</div>
+                                        <div>Unit 3 Story time</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 八年级语文下册 -->
+                        <div class="textbook-item" data-grade="grade8" data-subject="chinese" data-version="rjb" data-semester="second" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-left: 4px solid #667eea;">
+                            <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级语文下册（人教版 部编版 2026春）</h4>
+                            <div style="font-size: 13px; color: #999; margin-bottom: 15px;">人教版 | 部编版 | 2026春</div>
+                            <div class="textbook-chapters" style="margin-top: 15px;">
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #667eea; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第一单元：民俗风情
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>1. 《社戏》</div>
+                                        <div>2. 《回延安》</div>
+                                        <div>3. 《安塞腰鼓》</div>
+                                        <div>4. 《灯笼》</div>
+                                        <div>写作：考虑目的和对象</div>
+                                        <div>阅读综合实践</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #667eea; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第二单元：科学之光
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>5. 《大自然的语言》</div>
+                                        <div>6. 《阿西莫夫短文两篇》</div>
+                                        <div>7. 《月亮是从哪里来的》（新增）</div>
+                                        <div>8. 《时间的脚印》</div>
+                                        <div>写作：说明的顺序</div>
+                                        <div>专题学习活动：绿水青山，低碳生活</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #667eea; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第三单元：古诗苑漫步
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>9. 《桃花源记》</div>
+                                        <div>10. 《小石潭记》</div>
+                                        <div>11. 《核舟记》</div>
+                                        <div>12. 《诗经》二首（关雎、蒹葭）</div>
+                                        <div>写作：学写读后感</div>
+                                        <div>整本书阅读：《经典常谈》怎样读知识性作品</div>
+                                        <div>课外古诗词诵读</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #667eea; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第四单元：活动·探究（演讲）</div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>13. 《最后一次讲演》</div>
+                                        <div>14. 《敬业与乐业》（原九上）</div>
+                                        <div>15. 《应有格物致知精神》</div>
+                                        <div>16. 《我一生中的重要抉择》</div>
+                                        <div>任务一：学习演讲词</div>
+                                        <div>任务二：撰写演讲稿</div>
+                                        <div>任务三：举办演讲比赛</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #667eea; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第五单元：游记大观
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>17. 《壶口瀑布》</div>
+                                        <div>18. 《在长江源头各拉丹冬》</div>
+                                        <div>19. 《登勃朗峰》</div>
+                                        <div>20. 《一滴水经过丽江》</div>
+                                        <div>写作：学写游记</div>
+                                        <div>整本书阅读：《昆虫记》</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #667eea; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第六单元：经典传承
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>21. 《庄子》二则（北冥有鱼、庄子与惠子游于濠梁之上）</div>
+                                        <div>22. 《礼记》二则（虽有嘉肴、大道之行也）</div>
+                                        <div>23. 《马说》</div>
+                                        <div>24. 唐诗三首（石壕吏、茅屋为秋风所破歌、卖炭翁）</div>
+                                        <div>写作：学写故事</div>
+                                        <div>综合性学习：以和为贵</div>
+                                        <div>课外古诗词诵读</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 八年级数学下册 -->
+                        <div class="textbook-item" data-grade="grade8" data-subject="math" data-version="hjb" data-semester="second" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-left: 4px solid #4ecdc4;">
+                            <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级数学下册（沪教版 2026春）</h4>
+                            <div style="font-size: 13px; color: #999; margin-bottom: 15px;">沪教版 | 2026春</div>
+                            <div class="textbook-chapters" style="margin-top: 15px;">
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #4ecdc4; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第二十三章 四边形
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>23.1 多边形</div>
+                                        <div>  23.1.1 多边形的内角和</div>
+                                        <div>  23.1.2 多边形的外角和</div>
+                                        <div>23.2 平行四边形</div>
+                                        <div>  23.2.1 平行四边形的性质</div>
+                                        <div>  23.2.2 平行四边形的判定</div>
+                                        <div>23.3 特殊的平行四边形</div>
+                                        <div>  23.3.1 矩形</div>
+                                        <div>  23.3.2 菱形</div>
+                                        <div>  23.3.3 正方形</div>
+                                        <div>23.4 三角形的中位线与重心</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #4ecdc4; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第二十四章 平面直角坐标系
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>24.1 平面直角坐标系</div>
+                                        <div>24.2 坐标与图形的位置</div>
+                                        <div>24.3 坐标与图形的变化</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #4ecdc4; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第二十五章 一次函数</div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>25.1 变量与函数</div>
+                                        <div>25.2 正比例函数</div>
+                                        <div>25.3 一次函数</div>
+                                        <div>25.4 一次函数的应用</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #4ecdc4; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第二十六章 反比例函数
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>26.1 反比例函数的概念</div>
+                                        <div>26.2 反比例函数的图像与性质</div>
+                                        <div>26.3 反比例函数的应用</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 八年级物理下册 -->
+                        <div class="textbook-item" data-grade="grade8" data-subject="physics" data-version="hkb" data-semester="second" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-left: 4px solid #ffa726;">
+                            <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级物理下册（沪科版 2026春）</h4>
+                            <div style="font-size: 13px; color: #999; margin-bottom: 15px;">沪科版 | 2026春</div>
+                            <div class="textbook-chapters" style="margin-top: 15px;">
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #ffa726; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第六章 密度与压强
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>6.1 物质的密度</div>
+                                        <div>6.2 固体、液体密度的测量</div>
+                                        <div>6.3 压力与压强</div>
+                                        <div>6.4 液体压强</div>
+                                        <div>6.5 大气压强</div>
+                                        <div>6.6 流体压强与流速的关系</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #ffa726; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第七章 浮力
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>7.1 浮力</div>
+                                        <div>7.2 阿基米德原理</div>
+                                        <div>7.3 物体的浮沉条件</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #ffa726; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第八章 简单机械 功和能</div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>8.1 杠杆</div>
+                                        <div>8.2 滑轮</div>
+                                        <div>8.3 功</div>
+                                        <div>8.4 功率</div>
+                                        <div>8.5 动能和势能</div>
+                                        <div>8.6 机械能及其转化</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #ffa726; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>第九章 物态变化
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>9.1 温度与温度计</div>
+                                        <div>9.2 熔化与凝固</div>
+                                        <div>9.3 汽化与液化</div>
+                                        <div>9.4 升华与凝华</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 八年级化学全一册 -->
+                        <div class="textbook-item" data-grade="grade8" data-subject="chemistry" data-version="hkb" data-semester="all" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-left: 4px solid #4caf50;">
+                            <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级化学全一册（沪科版 五四学制 2026）</h4>
+                            <div style="font-size: 13px; color: #999; margin-bottom: 15px;">沪科版 | 五四学制 | 2026</div>
+                            <div class="textbook-chapters" style="margin-top: 15px;">
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #4caf50; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>主题一 化学的魅力
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>专题1 化学使世界更美好</div>
+                                        <div>  课题1 开启化学之门</div>
+                                        <div>  课题2 通用的化学语言</div>
+                                        <div>跨学科实践活动 生活垃圾的分类与回收利用</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #4caf50; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>主题二 常见的物质（上）
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>专题3 空气、氧气、二氧化碳</div>
+                                        <div>  课题1 空气</div>
+                                        <div>  课题2 氧气</div>
+                                        <div>  课题3 二氧化碳</div>
+                                        <div>基础实验1 氧气的制取与性质</div>
+                                        <div>基础实验2 二氧化碳的制取与性质</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #4caf50; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>主题三 物质的组成与结构</div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>专题4 水的性质与组成</div>
+                                        <div>  课题1 水的性质</div>
+                                        <div>  课题2 水的组成</div>
+                                        <div>专题5 物质的微观构成</div>
+                                        <div>  课题1 构成物质的基本微粒</div>
+                                        <div>  课题2 组成物质的元素</div>
+                                        <div>基础实验3 水的电解</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #4caf50; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>主题四 物质的化学变化（上）
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>专题6 化学变化及其表示</div>
+                                        <div>  课题1 化学变化的基本特征</div>
+                                        <div>  课题2 化学反应中的质量关系</div>
+                                        <div>  课题3 化学方程式的书写与应用</div>
+                                        <div>基础实验4 化学反应中质量关系的探究</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 八年级英语下册 -->
+                        <div class="textbook-item" data-grade="grade8" data-subject="english" data-version="nkshb" data-semester="second" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-left: 4px solid #f5576c;">
+                            <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级英语下册（牛津上海版 2026春）</h4>
+                            <div style="font-size: 13px; color: #999; margin-bottom: 15px;">牛津上海版 | 2026春</div>
+                            <div class="textbook-chapters" style="margin-top: 15px;">
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #f5576c; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>Unit 1 Art and artists
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>A Art in my view (Viewing and listening)</div>
+                                        <div>B My choice of an art class (Speaking)</div>
+                                        <div>C A famous artist (Reading & Grammar in use)</div>
+                                        <div>D My favourite work of art (Writing & Discovery)</div>
+                                        <div>E Works of art around us (Project)</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #f5576c; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>Unit 2 Great inventions and discoveries
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>A Great ancient inventions (Viewing and listening)</div>
+                                        <div>B Great modern inventions (Speaking)</div>
+                                        <div>C Stories behind great discoveries (Reading & Grammar in use)</div>
+                                        <div>D The most useful invention in my view (Writing & Discovery)</div>
+                                        <div>E The development and influences of a great invention (Project)</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #f5576c; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>Unit 3 Money</div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>A Daily use of money (Viewing and listening)</div>
+                                        <div>B Managing pocket money (Speaking)</div>
+                                        <div>C Money in the economy (Reading & Grammar in use)</div>
+                                        <div>D Spending and saving habits (Writing & Discovery)</div>
+                                        <div>E A charity sale plan (Project)</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #f5576c; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>Unit 4 Fashion
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>A Fashion in the past (Viewing and listening)</div>
+                                        <div>B Personal style (Speaking)</div>
+                                        <div>C Changing fashion (Reading & Grammar in use)</div>
+                                        <div>D My fashion attitude (Writing & Discovery)</div>
+                                        <div>E Fashion design (Project)</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #f5576c; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>Unit 5 Natural disasters
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>A Learning about natural disasters (Viewing and listening)</div>
+                                        <div>B Staying safe from natural disasters (Speaking)</div>
+                                        <div>C Surviving natural disasters (Reading & Grammar in use)</div>
+                                        <div>D Reporting natural disasters (Writing & Discovery)</div>
+                                        <div>E Being prepared for natural disasters (Project)</div>
+                                    </div>
+                                </div>
+                                <div class="chapter" style="margin-bottom: 10px;">
+                                    <div class="chapter-title" style="font-weight: bold; color: #f5576c; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center;">
+                                        <span style="margin-right: 5px;">▶</span>Unit 6 Friendship
+                                    </div>
+                                    <div class="chapter-content" style="padding-left: 20px; font-size: 14px; color: #666; display: none;">
+                                        <div>A Beginning of friendship (Viewing and listening)</div>
+                                        <div>B Ups and downs in friendship (Speaking)</div>
+                                        <div>C Power of friendship (Reading & Grammar in use)</div>
+                                        <div>D Memories with friends (Writing & Discovery)</div>
+                                        <div>E Recipes for friendship (Project)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 考试排名分析模态框 -->
+    <div id="exam-ranking-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">考试排名分析</h2>
+                <div class="modal-controls">
+                    <span class="minimize">−</span>
+                    <span class="maximize">□</span>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="exam-ranking-container">
+                    <div class="exam-ranking-header">
+                        <div class="exam-student-selector">
+                            <label for="exam-student">选择学霸：</label>
+                            <select id="exam-student">
+                                <option value="">选择学霸</option>
+                                <option value="KL">KL♀</option>
+                                <option value="KYP">KYP♂</option>
+                            </select>
+                        </div>
+                        <div class="exam-type-selector">
+                            <label for="exam-type">考试类型：</label>
+                            <select id="exam-type">
+                                <option value="monthly">月考</option>
+                                <option value="midterm">期中考试</option>
+                                <option value="final">期末考试</option>
+                            </select>
+                        </div>
+                        <div class="exam-date-filter">
+                            <label>日期范围：</label>
+                            <input type="date" id="exam-date-start">
+                            <span style="margin: 0 10px;">至</span>
+                            <input type="date" id="exam-date-end">
+                            <button id="apply-date-filter" class="btn btn-secondary" style="margin-left: 10px; padding: 6px 12px; font-size: 14px;">应用</button>
+                        </div>
+                        <button class="btn btn-primary" id="add-exam-data-btn" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">
+                            + 新增考试数据
+                        </button>
+                    </div>
+                    
+                    <div class="exam-ranking-content">
+                        <h3 style="margin: 0 0 20px 0; color: #333; font-size: 18px; font-weight: bold;">排名趋势分析</h3>
+                        
+                        <div class="exam-chart-section">
+                            <div class="chart-container">
+                                <canvas id="ranking-chart"></canvas>
+                            </div>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background-color: #667eea;"></span>
+                                    <span>班级排名</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background-color: #4ecdc4;"></span>
+                                    <span>校排名</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background-color: #ff6b6b;"></span>
+                                    <span>班级目标排名</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background-color: #f9a826;"></span>
+                                    <span>校目标排名</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="exam-history-section">
+                            <h3>历史考试记录</h3>
+                            <div id="exam-history-list" class="exam-history-list">
+                                <!-- 历史记录将在这里动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 练习题库模态框 -->
+    <div id="practice-questions-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">练习题库</h2>
+                <div class="modal-controls">
+                    <span class="minimize">−</span>
+                    <span class="maximize">□</span>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="practice-questions-container" style="padding: 20px;">
+                    <div class="practice-filters" style="display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap;">
+                        <div class="filter-group" style="flex: 1; min-width: 200px;">
+                            <label style="display: block; margin-bottom: 10px; font-weight: bold; color: #333;">选择学霸：</label>
+                            <select id="practice-student" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                                <option value="">全部学霸</option>
+                                <option value="KYP">KYP♂</option>
+                                <option value="KL">KL♀</option>
+                            </select>
+                        </div>
+                        <div class="filter-group" style="flex: 1; min-width: 200px;">
+                            <label style="display: block; margin-bottom: 10px; font-weight: bold; color: #333;">选择年级：</label>
+                            <select id="practice-grade" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                                <option value="">全部年级</option>
+                                <option value="grade5">五年级</option>
+                                <option value="grade6">六年级</option>
+                                <option value="grade7">七年级</option>
+                                <option value="grade8">八年级</option>
+                                <option value="grade9">九年级</option>
+                            </select>
+                        </div>
+                        <div class="filter-group" style="flex: 1; min-width: 200px;">
+                            <label style="display: block; margin-bottom: 10px; font-weight: bold; color: #333;">选择科目：</label>
+                            <select id="practice-subject" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                                <option value="">全部科目</option>
+                                <option value="chinese">语文</option>
+                                <option value="math">数学</option>
+                                <option value="english">英语</option>
+                                <option value="physics">物理</option>
+                                <option value="chemistry">化学</option>
+                                <option value="biology">生物</option>
+                                <option value="history">历史</option>
+                                <option value="geography">地理</option>
+                                <option value="politics">道德与法治</option>
+                            </select>
+                        </div>
+                        <div class="filter-group" style="flex: 1; min-width: 200px;">
+                            <label style="display: block; margin-bottom: 10px; font-weight: bold; color: #333;">选择册别：</label>
+                            <select id="practice-semester" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                                <option value="">全部册别</option>
+                                <option value="first">上册</option>
+                                <option value="second">下册</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="practice-content" style="background-color: #f8f9fa; border-radius: 10px; padding: 20px; min-height: 400px;">
+                        <h3 style="margin-top: 0; margin-bottom: 20px; color: #333; font-size: 18px; font-weight: bold; border-bottom: 2px solid #667eea; padding-bottom: 10px;">题库内容</h3>
+                        <div id="practice-questions-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px;">
+                            <!-- 五年级题库 -->
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #667eea;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">五年级语文基础练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含拼音、词语、句子等语文基础知识练习，适合五年级学生巩固基础。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">五年级 | 语文</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #667eea;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">五年级语文基础练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含拼音、词语、句子等语文基础知识练习，适合五年级学生巩固基础。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">五年级 | 语文</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #4ecdc4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">五年级数学计算练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含整数、小数、分数的四则运算练习，提高计算能力。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">五年级 | 数学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #4ecdc4 0%, #45b7aa 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #4ecdc4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">五年级数学计算练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含整数、小数、分数的四则运算练习，提高计算能力。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">五年级 | 数学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #4ecdc4 0%, #45b7aa 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ff6b6b;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">五年级英语单词练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含五年级英语核心单词的拼写、释义和运用练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">五年级 | 英语</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ff6b6b;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">五年级英语单词练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含五年级英语核心单词的拼写、释义和运用练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">五年级 | 英语</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            
+                            <!-- 六年级题库 -->
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #667eea;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">六年级语文阅读练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含现代文阅读和简单文言文阅读练习，提高理解能力。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">六年级 | 语文</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #667eea;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">六年级语文阅读练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含现代文阅读和简单文言文阅读练习，提高理解能力。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">六年级 | 语文</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #4ecdc4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">六年级数学应用题练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含分数、比例、百分数等应用题练习，提高解决问题的能力。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">六年级 | 数学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #4ecdc4 0%, #45b7aa 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #4ecdc4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">六年级数学应用题练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含分数、比例、百分数等应用题练习，提高解决问题的能力。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">六年级 | 数学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #4ecdc4 0%, #45b7aa 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ff6b6b;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">六年级英语句型练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含简单句型、时态和日常对话练习，提高英语表达能力。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">六年级 | 英语</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ff6b6b;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">六年级英语句型练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含简单句型、时态和日常对话练习，提高英语表达能力。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">六年级 | 英语</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            
+                            <!-- 七年级题库 -->
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #667eea;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">七年级语文阅读理解练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含现代文和文言文阅读理解练习，适合七年级学生使用。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">七年级 | 语文</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #667eea;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">七年级语文阅读理解练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含现代文和文言文阅读理解练习，适合七年级学生使用。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">七年级 | 语文</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #4ecdc4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">七年级数学代数练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含一元一次方程、二元一次方程组等代数练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">七年级 | 数学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #4ecdc4 0%, #45b7aa 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #4ecdc4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">七年级数学代数练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含一元一次方程、二元一次方程组等代数练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">七年级 | 数学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #4ecdc4 0%, #45b7aa 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ff6b6b;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">七年级英语语法练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含时态、语态、从句等英语语法练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">七年级 | 英语</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ff6b6b;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">七年级英语语法练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含时态、语态、从句等英语语法练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">七年级 | 英语</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ffd93d;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">七年级生物基础练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含生物的基本特征、细胞结构、生态系统等基础知识练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">七年级 | 生物</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ffd93d 0%, #f9a826 100%); color: #333; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ffd93d;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">七年级生物基础练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含生物的基本特征、细胞结构、生态系统等基础知识练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">七年级 | 生物</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ffd93d 0%, #f9a826 100%); color: #333; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #96ceb4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">七年级化学基础练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含化学元素、化学反应等基础知识练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">七年级 | 化学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #96ceb4 0%, #4ecdc4 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #96ceb4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">七年级化学基础练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含化学元素、化学反应等基础知识练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">七年级 | 化学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #96ceb4 0%, #4ecdc4 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            
+                            <!-- 八年级题库 -->
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #667eea;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级语文作文练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含议论文、记叙文等多种文体的写作练习和指导。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">八年级 | 语文</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #667eea;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级语文作文练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含议论文、记叙文等多种文体的写作练习和指导。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">八年级 | 语文</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #4ecdc4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级数学几何练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含三角形、四边形、相似形等几何知识练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">八年级 | 数学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #4ecdc4 0%, #45b7aa 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #4ecdc4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级数学几何练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含三角形、四边形、相似形等几何知识练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">八年级 | 数学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #4ecdc4 0%, #45b7aa 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ff6b6b;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级英语阅读练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含完形填空、阅读理解等英语阅读能力练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">八年级 | 英语</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ff6b6b;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级英语阅读练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含完形填空、阅读理解等英语阅读能力练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">八年级 | 英语</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ffd93d;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级物理基础练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含力学、热学、光学等物理基础知识练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">八年级 | 物理</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ffd93d 0%, #f9a826 100%); color: #333; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ffd93d;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级物理基础练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含力学、热学、光学等物理基础知识练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">八年级 | 物理</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ffd93d 0%, #f9a826 100%); color: #333; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #96ceb4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级化学基础练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含化学方程式、化学实验等基础知识练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">八年级 | 化学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #96ceb4 0%, #4ecdc4 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #96ceb4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">八年级化学基础练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含化学方程式、化学实验等基础知识练习。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">八年级 | 化学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #96ceb4 0%, #4ecdc4 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            
+                            <!-- 九年级题库 -->
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #667eea;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">九年级语文综合练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含语文基础知识、阅读、作文等综合练习，适合中考备考。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">九年级 | 语文</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #667eea;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">九年级语文综合练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含语文基础知识、阅读、作文等综合练习，适合中考备考。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">九年级 | 语文</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #4ecdc4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">九年级数学综合练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含代数、几何、函数等综合练习，适合中考备考。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">九年级 | 数学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #4ecdc4 0%, #45b7aa 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #4ecdc4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">九年级数学综合练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含代数、几何、函数等综合练习，适合中考备考。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">九年级 | 数学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #4ecdc4 0%, #45b7aa 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ff6b6b;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">九年级英语综合练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含语法、阅读、写作等综合练习，适合中考备考。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">九年级 | 英语</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ff6b6b;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">九年级英语综合练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含语法、阅读、写作等综合练习，适合中考备考。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">九年级 | 英语</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ffd93d;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">九年级物理基础练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含力学、电磁学等物理综合练习，适合中考备考。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">九年级 | 物理</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ffd93d 0%, #f9a826 100%); color: #333; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ffd93d;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">九年级物理基础练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含力学、电磁学等物理综合练习，适合中考备考。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">九年级 | 物理</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ffd93d 0%, #f9a826 100%); color: #333; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #96ceb4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">九年级化学基础练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含化学方程式、化学实验等综合练习，适合中考备考。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">九年级 | 化学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #96ceb4 0%, #4ecdc4 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #96ceb4;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">九年级化学基础练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含化学方程式、化学实验等综合练习，适合中考备考。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">九年级 | 化学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #96ceb4 0%, #4ecdc4 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ff6b6b;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">九年级物理化学综合练习（上册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含物理和化学的综合练习，适合中考备考。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">九年级 | 物理/化学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                            <div class="practice-item" style="background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; border-top: 4px solid #ff6b6b;">
+                                <h4 style="margin-top: 0; margin-bottom: 12px; color: #333; font-size: 17px; font-weight: bold;">九年级物理化学综合练习（下册）</h4>
+                                <p style="margin-bottom: 18px; color: #666; font-size: 14px; line-height: 1.4;">包含物理和化学的综合练习，适合中考备考。</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 13px; color: #999; font-weight: 500;">九年级 | 物理/化学</span>
+                                    <button style="padding: 8px 16px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">开始练习</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 练习详情模态框 -->
+    <div id="practice-detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">练习详情</h2>
+                <div class="modal-controls">
+                    <span class="minimize">−</span>
+                    <span class="maximize">□</span>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="practice-detail-container" style="padding: 20px;">
+                    <div class="practice-info" style="margin-bottom: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 10px;">
+                        <h3 id="practice-title" style="margin-top: 0; margin-bottom: 10px; color: #333; font-size: 18px; font-weight: bold;">练习标题</h3>
+                        <p id="practice-description" style="margin-bottom: 15px; color: #666; font-size: 14px;">练习描述</p>
+                        <div style="display: flex; gap: 20px; font-size: 14px; color: #999;">
+                            <span id="practice-grade-subject">年级 | 科目</span>
+                        </div>
+                    </div>
+                    
+                    <div class="practice-selection" style="background-color: #f8f9fa; border-radius: 10px; padding: 20px;">
+                        <h3 style="margin-top: 0; margin-bottom: 20px; color: #333; font-size: 16px; font-weight: bold; border-bottom: 2px solid #667eea; padding-bottom: 10px;">选择练习类型</h3>
+                        
+                        <div class="practice-type-selector" style="display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap;">
+                            <div class="type-option" style="flex: 1; min-width: 200px; background-color: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); cursor: pointer; transition: all 0.3s ease;">
+                                <h4 style="margin-top: 0; margin-bottom: 10px; color: #333; font-size: 15px; font-weight: bold;">小节练习</h4>
+                                <p style="margin-bottom: 15px; color: #666; font-size: 14px; line-height: 1.4;">针对每个小节的专项练习，帮助巩固知识点。</p>
+                                <button class="practice-type-btn" data-type="section" style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">选择</button>
+                            </div>
+                            
+                            <div class="type-option" style="flex: 1; min-width: 200px; background-color: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); cursor: pointer; transition: all 0.3s ease;">
+                                <h4 style="margin-top: 0; margin-bottom: 10px; color: #333; font-size: 15px; font-weight: bold;">单元练习</h4>
+                                <p style="margin-bottom: 15px; color: #666; font-size: 14px; line-height: 1.4;">覆盖整个单元的综合练习，检验单元学习成果。</p>
+                                <button class="practice-type-btn" data-type="unit" style="padding: 8px 16px; background: linear-gradient(135deg, #4ecdc4 0%, #45b7aa 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">选择</button>
+                            </div>
+                            
+                            <div class="type-option" style="flex: 1; min-width: 200px; background-color: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); cursor: pointer; transition: all 0.3s ease;">
+                                <h4 style="margin-top: 0; margin-bottom: 10px; color: #333; font-size: 15px; font-weight: bold;">月度练习</h4>
+                                <p style="margin-bottom: 15px; color: #666; font-size: 14px; line-height: 1.4;">每月的综合练习，帮助系统复习当月所学内容。</p>
+                                <button class="practice-type-btn" data-type="monthly" style="padding: 8px 16px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">选择</button>
+                            </div>
+                            
+                            <div class="type-option" style="flex: 1; min-width: 200px; background-color: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); cursor: pointer; transition: all 0.3s ease;">
+                                <h4 style="margin-top: 0; margin-bottom: 10px; color: #333; font-size: 15px; font-weight: bold;">期末练习</h4>
+                                <p style="margin-bottom: 15px; color: #666; font-size: 14px; line-height: 1.4;">期末复习综合练习，涵盖整个学期的知识点。</p>
+                                <button class="practice-type-btn" data-type="final" style="padding: 8px 16px; background: linear-gradient(135deg, #ffd93d 0%, #f9a826 100%); color: #333; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">选择</button>
+                            </div>
+                        </div>
+                        
+                        <div class="unit-selector" style="display: none; margin-top: 30px;">
+                                <h4 style="margin-top: 0; margin-bottom: 15px; color: #333; font-size: 15px; font-weight: bold;">选择单元</h4>
+                                <div id="unit-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;">
+                                    <!-- 单元列表将在这里动态生成 -->
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 新增考试数据模态框 -->
+    <div id="add-exam-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">新增考试数据</h2>
+                <div class="modal-controls">
+                    <span class="minimize">−</span>
+                    <span class="maximize">□</span>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="exam-form-section">
+                    <div class="exam-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="exam-date">考试日期：</label>
+                                <input type="date" id="exam-date">
+                            </div>
+                            <div class="form-group">
+                                <label for="class-ranking">班级排名：</label>
+                                <input type="number" id="class-ranking" min="1">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="school-ranking">校排名：</label>
+                                <input type="number" id="school-ranking" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label for="class-target-ranking">班级目标排名：</label>
+                                <input type="number" id="class-target-ranking" min="1">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="school-target-ranking">校目标排名：</label>
+                                <input type="number" id="school-target-ranking" min="1">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="save-exam-data">保存数据</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 添加新作业模态框 -->
+    <div id="add-task-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">添加新作业</h2>
+                <div class="modal-controls">
+                    <span class="minimize">−</span>
+                    <span class="maximize">□</span>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form id="add-task-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="task-student">学霸 <span class="required">*</span></label>
+                            <select id="task-student" required>
+                                <option value="">选择学霸</option>
+                                <option value="KL">KL♀</option>
+                                <option value="KYP">KYP♂</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-subject">科目 <span class="required">*</span></label>
+                            <select id="task-subject" required>
+                                <option value="">选择科目</option>
+                                <option value="语文">语文</option>
+                                <option value="数学">数学</option>
+                                <option value="英语">英语</option>
+                                <option value="物理">物理</option>
+                                <option value="化学">化学</option>
+                                <option value="生物">生物</option>
+                                <option value="历史">历史</option>
+                                <option value="地理">地理</option>
+                                <option value="政治">政治</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="task-title">作业类型 <span class="required">*</span></label>
+                            <select id="task-title" required>
+                                <option value="">选择作业类型</option>
+                                <option value="学校作业">学校作业</option>
+                                <option value="家庭作业">家庭作业</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-start-date">开始日期 <span class="required">*</span></label>
+                            <input type="datetime-local" id="task-start-date" required>
+                        </div>
+                    </div>
+                    <!-- 家庭作业具体作业、章节和小节 -->
+                    <div class="form-row task-assignment-homework" style="display: none;">
+                        <div class="form-group" style="flex: 1; margin-right: 10px;">
+                            <label for="task-assignment">具体作业 <span class="required">*</span></label>
+                            <select id="task-assignment">
+                                <option value="">选择作业</option>
+                                <option value="上海作业">上海作业</option>
+                                <option value="名校名卷">名校名卷</option>
+                                <option value="一课一练">一课一练</option>
+                                <option value="教材全解">教材全解</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1; margin-right: 10px;">
+                            <label for="task-chapter">章节 <span class="required">*</span></label>
+                            <select id="task-chapter">
+                                <option value="">选择章节</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="task-section">小节 <span class="required">*</span></label>
+                            <select id="task-section">
+                                <option value="">选择小节</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row task-assignment-homework" style="display: none; justify-content: flex-end; margin-top: 10px; gap: 10px;">
+                        <button type="button" class="btn btn-success" id="mark-section-btn">直接打标小节完成</button>
+                        <button type="button" class="btn btn-danger" id="unmark-section-btn">取消打标完成</button>
+                    </div>
+                    <!-- 学校作业具体作业 -->
+                    <div class="form-group task-assignment-school" style="display: none;">
+                        <label>具体作业 <span class="required">*</span></label>
+                        <div class="school-assignments">
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-preview">
+                                <label for="task-assignment-preview">预习</label>
+                                <input type="text" id="task-assignment-preview-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-writing">
+                                <label for="task-assignment-writing">习作</label>
+                                <input type="text" id="task-assignment-writing-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-practice">
+                                <label for="task-assignment-practice">语练</label>
+                                <input type="text" id="task-assignment-practice-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-copy">
+                                <label for="task-assignment-copy">抄写</label>
+                                <input type="text" id="task-assignment-copy-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-dictation">
+                                <label for="task-assignment-dictation">家默</label>
+                                <input type="text" id="task-assignment-dictation-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-listening">
+                                <label for="task-assignment-listening">听读</label>
+                                <input type="text" id="task-assignment-listening-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-recitation">
+                                <label for="task-assignment-recitation">背诵</label>
+                                <input type="text" id="task-assignment-recitation-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-hbook">
+                                <label for="task-assignment-hbook">H本默写</label>
+                                <input type="text" id="task-assignment-hbook-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-english-workbook">
+                                <label for="task-assignment-english-workbook">英语练习册</label>
+                                <input type="text" id="task-assignment-english-workbook-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-notebook">
+                                <label for="task-assignment-notebook">写字本</label>
+                                <input type="text" id="task-assignment-notebook-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-practice-paper">
+                                <label for="task-assignment-practice-paper">练习卷</label>
+                                <input type="text" id="task-assignment-practice-paper-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-colorbook">
+                                <label for="task-assignment-colorbook">彩本</label>
+                                <input type="text" id="task-assignment-colorbook-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-excerpt">
+                                <label for="task-assignment-excerpt">摘抄</label>
+                                <input type="text" id="task-assignment-excerpt-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-schoolbook">
+                                <label for="task-assignment-schoolbook">校本</label>
+                                <input type="text" id="task-assignment-schoolbook-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-workbook">
+                                <label for="task-assignment-workbook">练习册</label>
+                                <input type="text" id="task-assignment-workbook-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-exercisebook">
+                                <label for="task-assignment-exercisebook">作业本</label>
+                                <input type="text" id="task-assignment-exercisebook-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-mistakebook">
+                                <label for="task-assignment-mistakebook">错题本</label>
+                                <input type="text" id="task-assignment-mistakebook-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-weekly">
+                                <label for="task-assignment-weekly">周记本</label>
+                                <input type="text" id="task-assignment-weekly-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-notes">
+                                <label for="task-assignment-notes">课堂笔记</label>
+                                <input type="text" id="task-assignment-notes-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="task-assignment-ehear">
+                                <label for="task-assignment-ehear">E听说</label>
+                                <input type="text" id="task-assignment-ehear-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item" style="visibility: hidden;">
+                                <input type="checkbox">
+                                <label>占位</label>
+                                <input type="text" placeholder="具体描述">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group task-page-range">
+                        <label for="task-page">页码范围 <span class="required">*</span></label>
+                        <div class="page-range">
+                            <input type="number" id="task-page-start" min="1" max="300" placeholder="起始页码">
+                            <span class="page-separator">-</span>
+                            <input type="number" id="task-page-end" min="1" max="300" placeholder="结束页码">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="task-due-date">截止日期时间 <span class="required">*</span></label>
+                            <input type="datetime-local" id="task-due-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-priority">优先级 <span class="required">*</span></label>
+                            <select id="task-priority" required>
+                                <option value="低">低</option>
+                                <option value="中">中</option>
+                                <option value="高" selected>高</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">提交</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 编辑任务模态框 -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">编辑作业</h2>
+                <div class="modal-controls">
+                    <span class="minimize">−</span>
+                    <span class="maximize">□</span>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+            <form id="edit-task-form">
+                <input type="hidden" id="edit-task-id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-task-student">学霸 <span class="required">*</span></label>
+                        <select id="edit-task-student" required>
+                            <option value="">选择学霸</option>
+                            <option value="KL">KL♀</option>
+                            <option value="KYP">KYP♂</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-task-subject">科目 <span class="required">*</span></label>
+                        <select id="edit-task-subject" required>
+                            <option value="">选择科目</option>
+                            <option value="语文">语文</option>
+                            <option value="数学">数学</option>
+                            <option value="英语">英语</option>
+                            <option value="物理">物理</option>
+                            <option value="化学">化学</option>
+                            <option value="生物">生物</option>
+                            <option value="历史">历史</option>
+                            <option value="地理">地理</option>
+                            <option value="政治">政治</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-task-title">作业类型 <span class="required">*</span></label>
+                        <select id="edit-task-title" required>
+                            <option value="">选择作业类型</option>
+                            <option value="学校作业">学校作业</option>
+                            <option value="家庭作业">家庭作业</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-task-start-date">开始日期 <span class="required">*</span></label>
+                        <input type="datetime-local" id="edit-task-start-date" required>
+                    </div>
+                </div>
+                <!-- 家庭作业具体作业、章节和小节 -->
+                <div class="form-row edit-task-assignment-homework" style="display: none;">
+                    <div class="form-group" style="flex: 1; margin-right: 10px;">
+                        <label for="edit-task-assignment">具体作业 <span class="required">*</span></label>
+                        <select id="edit-task-assignment">
+                            <option value="">选择作业</option>
+                            <option value="上海作业">上海作业</option>
+                            <option value="名校名卷">名校名卷</option>
+                            <option value="一课一练">一课一练</option>
+                            <option value="教材全解">教材全解</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1; margin-right: 10px;">
+                        <label for="edit-task-chapter">章节 <span class="required">*</span></label>
+                        <select id="edit-task-chapter">
+                            <option value="">选择章节</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="edit-task-section">小节 <span class="required">*</span></label>
+                        <select id="edit-task-section">
+                            <option value="">选择小节</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- 学校作业具体作业 -->
+                <div class="form-group edit-task-assignment-school" style="display: none;">
+                    <label>具体作业 <span class="required">*</span></label>
+                    <div class="school-assignments">
+                        <div class="assignment-item">
+                            <input type="checkbox" id="edit-task-assignment-preview">
+                            <label for="edit-task-assignment-preview">预习</label>
+                            <input type="text" id="edit-task-assignment-preview-desc" placeholder="具体描述">
+                        </div>
+                        <div class="assignment-item">
+                            <input type="checkbox" id="edit-task-assignment-writing">
+                            <label for="edit-task-assignment-writing">习作</label>
+                            <input type="text" id="edit-task-assignment-writing-desc" placeholder="具体描述">
+                        </div>
+                        <div class="assignment-item">
+                            <input type="checkbox" id="edit-task-assignment-practice">
+                            <label for="edit-task-assignment-practice">语练</label>
+                            <input type="text" id="edit-task-assignment-practice-desc" placeholder="具体描述">
+                        </div>
+                        <div class="assignment-item">
+                            <input type="checkbox" id="edit-task-assignment-copy">
+                            <label for="edit-task-assignment-copy">抄写</label>
+                            <input type="text" id="edit-task-assignment-copy-desc" placeholder="具体描述">
+                        </div>
+                        <div class="assignment-item">
+                            <input type="checkbox" id="edit-task-assignment-dictation">
+                            <label for="edit-task-assignment-dictation">家默</label>
+                            <input type="text" id="edit-task-assignment-dictation-desc" placeholder="具体描述">
+                        </div>
+                        <div class="assignment-item">
+                            <input type="checkbox" id="edit-task-assignment-listening">
+                            <label for="edit-task-assignment-listening">听读</label>
+                            <input type="text" id="edit-task-assignment-listening-desc" placeholder="具体描述">
+                        </div>
+                        <div class="assignment-item">
+                            <input type="checkbox" id="edit-task-assignment-recitation">
+                            <label for="edit-task-assignment-recitation">背诵</label>
+                            <input type="text" id="edit-task-assignment-recitation-desc" placeholder="具体描述">
+                        </div>
+                        <div class="assignment-item">
+                            <input type="checkbox" id="edit-task-assignment-hbook">
+                            <label for="edit-task-assignment-hbook">H本默写</label>
+                            <input type="text" id="edit-task-assignment-hbook-desc" placeholder="具体描述">
+                        </div>
+                        <div class="assignment-item">
+                            <input type="checkbox" id="edit-task-assignment-english-workbook">
+                            <label for="edit-task-assignment-english-workbook">英语练习册</label>
+                            <input type="text" id="edit-task-assignment-english-workbook-desc" placeholder="具体描述">
+                        </div>
+                        <div class="assignment-item">
+                            <input type="checkbox" id="edit-task-assignment-notebook">
+                            <label for="edit-task-assignment-notebook">写字本</label>
+                            <input type="text" id="edit-task-assignment-notebook-desc" placeholder="具体描述">
+                        </div>
+                        <div class="assignment-item">
+                            <input type="checkbox" id="edit-task-assignment-practice-paper">
+                            <label for="edit-task-assignment-practice-paper">练习卷</label>
+                            <input type="text" id="edit-task-assignment-practice-paper-desc" placeholder="具体描述">
+                        </div>
+                        <div class="assignment-item">
+                                <input type="checkbox" id="edit-task-assignment-colorbook">
+                                <label for="edit-task-assignment-colorbook">彩本</label>
+                                <input type="text" id="edit-task-assignment-colorbook-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="edit-task-assignment-excerpt">
+                                <label for="edit-task-assignment-excerpt">摘抄</label>
+                                <input type="text" id="edit-task-assignment-excerpt-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="edit-task-assignment-schoolbook">
+                                <label for="edit-task-assignment-schoolbook">校本</label>
+                                <input type="text" id="edit-task-assignment-schoolbook-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="edit-task-assignment-workbook">
+                                <label for="edit-task-assignment-workbook">练习册</label>
+                                <input type="text" id="edit-task-assignment-workbook-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="edit-task-assignment-exercisebook">
+                                <label for="edit-task-assignment-exercisebook">作业本</label>
+                                <input type="text" id="edit-task-assignment-exercisebook-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="edit-task-assignment-mistakebook">
+                                <label for="edit-task-assignment-mistakebook">错题本</label>
+                                <input type="text" id="edit-task-assignment-mistakebook-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="edit-task-assignment-weekly">
+                                <label for="edit-task-assignment-weekly">周记本</label>
+                                <input type="text" id="edit-task-assignment-weekly-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="edit-task-assignment-notes">
+                                <label for="edit-task-assignment-notes">课堂笔记</label>
+                                <input type="text" id="edit-task-assignment-notes-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item">
+                                <input type="checkbox" id="edit-task-assignment-ehear">
+                                <label for="edit-task-assignment-ehear">E听说</label>
+                                <input type="text" id="edit-task-assignment-ehear-desc" placeholder="具体描述">
+                            </div>
+                            <div class="assignment-item" style="visibility: hidden;">
+                                <input type="checkbox">
+                                <label>占位</label>
+                                <input type="text" placeholder="具体描述">
+                            </div>
+                    </div>
+                </div>
+                <div class="form-group edit-task-page-range">
+                    <label for="edit-task-page">页码范围 <span class="required">*</span></label>
+                    <div class="page-range">
+                        <input type="number" id="edit-task-page-start" min="1" max="300" placeholder="起始页码">
+                        <span class="page-separator">-</span>
+                        <input type="number" id="edit-task-page-end" min="1" max="300" placeholder="结束页码">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-task-due-date">截止日期时间 <span class="required">*</span></label>
+                        <input type="datetime-local" id="edit-task-due-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-task-priority">优先级 <span class="required">*</span></label>
+                        <select id="edit-task-priority" required>
+                            <option value="低">低</option>
+                            <option value="中">中</option>
+                            <option value="高" selected>高</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">保存修改</button>
+            </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 效率分析仪表盘模态框 -->
+    <div id="efficiency-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 class="modal-title">效率分析仪表盘</h2>
+                <div class="modal-controls">
+                    <button class="btn btn-minimize" id="minimize-efficiency">−</button>
+                    <button class="btn btn-fullscreen" id="fullscreen-efficiency">⤢</button>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="efficiency-controls" style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+                    <label for="efficiency-student" style="font-weight: bold;">选择学霸：</label>
+                    <select id="efficiency-student" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                        <option value="">全部学霸</option>
+                        <option value="KYP">KYP</option>
+                        <option value="KL">KL</option>
+                    </select>
+                    <button id="update-efficiency" class="btn" onclick="console.log('点击了更新分析按钮'); taskManager.generateEfficiencyReport()" style="padding: 8px 16px; background-color: #667eea; color: white; border: none; border-radius: 4px; font-size: 14px; cursor: pointer;">更新分析</button>
+                </div>
+                <div id="efficiency-content">
+                    <!-- 效率分析内容将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 作业明细模态框 -->
+    <div id="homework-detail-modal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 class="modal-title">作业明细</h2>
+                <div class="modal-controls">
+                    <button class="btn btn-minimize" id="minimize-homework-detail">−</button>
+                    <button class="btn btn-fullscreen" id="fullscreen-homework-detail">⤢</button>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div id="homework-detail-content">
+                    <!-- 作业明细内容将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 上传作业图片模态框 -->
+    <div id="upload-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="modal-title">上传作业图片</h2>
+            <form id="upload-form">
+                <input type="hidden" id="upload-task-id">
+                <div class="form-group">
+                    <label for="upload-image">选择文件（可多选）</label>
+                    <input type="file" id="upload-image" accept="image/*, audio/*" multiple required>
+                </div>
+                <div class="form-group">
+                    <p class="wechat-tip">提示：</p>
+                    <ul class="wechat-paths">
+                        <li>1. 打开微信电脑版，找到聊天记录中的图片</li>
+                        <li>2. 右键点击图片，选择"另存为"</li>
+                        <li>3. 保存到桌面或其他方便的位置</li>
+                        <li>4. 在此处选择保存的图片</li>
+                    </ul>
+                    <button type="button" class="btn btn-secondary" id="open-desktop">打开桌面文件夹</button>
+                </div>
+                <button type="button" id="upload-btn" class="btn btn-primary">上传</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 图片查看器模态框 -->
+    <div id="image-viewer" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="viewer-image" src="" alt="放大图片">
+        </div>
+    </div>
+    
+    <!-- 直接打标小节模态框 -->
+    <div id="mark-section-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">直接打标小节</h2>
+                <div class="modal-controls">
+                    <span class="minimize">−</span>
+                    <span class="maximize">□</span>
+                    <span class="close">&times;</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form id="mark-section-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="mark-student">学霸 <span class="required">*</span></label>
+                            <select id="mark-student" required>
+                                <option value="">选择学霸</option>
+                                <option value="KL">KL♀</option>
+                                <option value="KYP">KYP♂</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="mark-subject">科目 <span class="required">*</span></label>
+                            <select id="mark-subject" required>
+                                <option value="">选择科目</option>
+                                <option value="语文">语文</option>
+                                <option value="数学">数学</option>
+                                <option value="英语">英语</option>
+                                <option value="物理">物理</option>
+                                <option value="化学">化学</option>
+                                <option value="生物">生物</option>
+                                <option value="历史">历史</option>
+                                <option value="地理">地理</option>
+                                <option value="政治">政治</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="mark-assignment-type">作业类型 <span class="required">*</span></label>
+                            <select id="mark-assignment-type" required>
+                                <option value="">选择作业类型</option>
+                                <option value="家庭作业">家庭作业</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row mark-assignment-homework">
+                        <div class="form-group" style="flex: 1; margin-right: 10px;">
+                            <label for="mark-assignment">具体作业 <span class="required">*</span></label>
+                            <select id="mark-assignment">
+                                <option value="">选择作业</option>
+                                <option value="上海作业">上海作业</option>
+                                <option value="名校名卷">名校名卷</option>
+                                <option value="一课一练">一课一练</option>
+                                <option value="教材全解">教材全解</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1; margin-right: 10px;">
+                            <label for="mark-chapter">章节 <span class="required">*</span></label>
+                            <select id="mark-chapter">
+                                <option value="">选择章节</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="mark-section">小节 <span class="required">*</span></label>
+                            <select id="mark-section">
+                                <option value="">选择小节</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">打标完成</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

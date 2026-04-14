@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>清除本地存储数据</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>清除本地存储数据</h1>
+    <button onclick="clearStorage()">清除学校课程进度数据</button>
+    <div class="message" id="message"></div>
+
+    <script>
+        function clearStorage() {
+            // 清除学校课程进度数据
+            localStorage.removeItem('schoolProgress');
+            // 清除可能的其他相关数据
+            localStorage.removeItem('tasks');
+            localStorage.removeItem('completedSections');
+            
+            document.getElementById('message').textContent = '所有数据已清除！';
+            console.log('所有数据已清除');
+        }
+    </script>
+</body>
+</html>

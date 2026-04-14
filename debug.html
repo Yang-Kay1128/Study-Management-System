@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Tasks</title>
+</head>
+<body>
+    <h1>任务数据调试</h1>
+    <pre id="tasks-data"></pre>
+    <script>
+        // 读取本地存储中的任务数据
+        const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+        document.getElementById('tasks-data').textContent = JSON.stringify(tasks, null, 2);
+    </script>
+</body>
+</html>
